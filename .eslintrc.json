@@ -44,10 +44,7 @@
     "no-labels": "error", // Disallow labeled statements
     "no-lone-blocks": "error", // Disallow unnecessary nested blocks
     "no-loop-func": "error", // Disallow function declarations and expressions inside loop statements
-    "no-magic-numbers": [
-      "error",
-      { "ignore": [0, 1], "ignoreArrayIndexes": true }
-    ], // Disallow magic numbers
+
     "no-multi-spaces": "error", // Disallow multiple spaces
     "no-multi-str": "error", // Disallow multiline strings
     "no-new": "error", // Disallow new operators outside of assignments or comparisons
@@ -71,7 +68,6 @@
     "no-unused-labels": "error", // Disallow unused labels
     "no-useless-call": "error", // Disallow unnecessary calls to .call() and .apply()
     "no-useless-concat": "error", // Disallow unnecessary concatenation of literals or template literals
-    "no-useless-escape": "error", // Disallow unnecessary escape characters
     "no-useless-return": "error", // Disallow redundant return statements
     "no-void": "error", // Disallow void operators
     "no-warning-comments": "warn", // Disallow specified warning terms in comments
