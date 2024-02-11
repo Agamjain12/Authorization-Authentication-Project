@@ -1,10 +1,8 @@
 const express = require('express');
 const router = require('./routes/UserRoutes');
-const user = require('./model/User');
-const user_temp = require('./model/User-Temp');
 const { default: mongoose } = require('mongoose');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
-const nodemailer = require('nodemailer');
 
 const app = express();
 
@@ -12,22 +10,33 @@ dotenv.config();
 
 app.use(express.json());
 
-app.use('/user', router);
+app.use(express.static('public'));
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
-    return res.status(200).json({
-        message: 'whatup',
-    });
-});
+app.set('view engine', 'ejs');
+
+app.use(router);
+
+// cookies example
+
+// app.get('/set-cookies', (req, res) => {
+//   res.cookie('jetray', true, { maxAge: 1000 });
+//   res.send('cookies are here children');
+// });
+
+// app.get('/read-cookies', (req, res) => {
+//   const cookies = req.cookies;
+//   console.log(cookies);
+// });
 
 mongoose
-    .connect(process.env.DATABASE_URL)
-    .then(() => {
-        app.listen(process.env.PORT, () => {
-            console.log('app is running on port 3001');
-        });
-        console.log('connect to database');
-    })
-    .catch((error) => {
-        console.log(error);
+  .connect(process.env.DATABASE_URL)
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log('app is running on port 3001');
     });
+    console.log('connect to database');
+  })
+  .catch((error) => {
+    console.log(error);
+  });
