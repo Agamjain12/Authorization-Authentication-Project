@@ -8,6 +8,60 @@
   <body>
     <nav>
       <h1><a href="/">Mr. Smoothies</a></h1>
+      <ul id="authButtons">
+        <li><a href="/login" id="loginB">Log in</a></li>
+        <li><a href="/signup" class="btn" id="signupB">Sign up</a></li>
+        <li
+          ><button onclick="logout()" class="btn hidden" id="logoutB"
+            >Logout</button
+          ></li
+        >
+      </ul>
     </nav>
   </body></html
 >
+
+<script>
+  if (localStorage.getItem('LOGIN') === 'SUCCESS') {
+    if (!document.getElementById('loginB').classList.contains('hidden')) {
+      document.getElementById('loginB').classList.add('hidden');
+    }
+    if (!document.getElementById('signupB').classList.contains('hidden')) {
+      document.getElementById('signupB').classList.add('hidden');
+    }
+
+    if (document.getElementById('logoutB').classList.contains('hidden')) {
+      document.getElementById('logoutB').classList.remove('hidden');
+    }
+  } else {
+    if (document.getElementById('loginB').classList.contains('hidden')) {
+      document.getElementById('loginB').classList.remove('hidden');
+    }
+    if (document.getElementById('signupB').classList.contains('hidden')) {
+      document.getElementById('signupB').classList.remove('hidden');
+    }
+
+    if (!document.getElementById('logoutB').classList.contains('hidden')) {
+      document.getElementById('logoutB').classList.add('hidden');
+    }
+  }
+
+  async function logout() {
+    const response = await fetch('/logout');
+
+    if (response.ok) {
+      localStorage.removeItem('LOGIN');
+
+      if (document.getElementById('loginB').classList.contains('hidden')) {
+        document.getElementById('loginB').classList.remove('hidden');
+      }
+      if (document.getElementById('signupB').classList.contains('hidden')) {
+        document.getElementById('signupB').classList.remove('hidden');
+      }
+
+      if (!document.getElementById('logoutB').classList.contains('hidden')) {
+        document.getElementById('logoutB').classList.add('hidden');
+      }
+    }
+  }
+</script>

@@ -12,3 +12,24 @@
 </header>
 
 <%- include('partials/footer'); -%>
+
+<script>
+  window.onload = async () => {
+    const verifyResponse = await fetch('/verify');
+
+    if (!verifyResponse.ok) {
+      localStorage.removeItem('LOGIN');
+
+      if (document.getElementById('loginB').classList.contains('hidden')) {
+        document.getElementById('loginB').classList.remove('hidden');
+      }
+      if (document.getElementById('signupB').classList.contains('hidden')) {
+        document.getElementById('signupB').classList.remove('hidden');
+      }
+
+      if (!document.getElementById('logoutB').classList.contains('hidden')) {
+        document.getElementById('logoutB').classList.add('hidden');
+      }
+    }
+  };
+</script>

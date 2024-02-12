@@ -4,10 +4,10 @@
   <h2>Sign up</h2>
   <label for="email">Email</label>
   <input type="text" name="email" required />
-  <div class="email error"></div>
+  <div id="emailError"></div>
   <label for="password">Password</label>
   <input type="password" name="password" required />
-  <div class="password error"></div>
+  <div id="passwordError"></div>
   <button>Sign up</button>
 </form>
 
@@ -15,6 +15,8 @@
 
 <script>
   const form = document.querySelector('form');
+  const emailErrorDiv = document.getElementById('emailError');
+  const passwordErrorDiv = document.getElementById('passwordError');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -29,11 +31,19 @@
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (data.errors && Object.keys(data.errors).length > 0) {
+        if (data.errors.email) {
+          emailErrorDiv.innerText = data.errors.email;
+        }
+
+        if (data.errors.password) {
+          passwordErrorDiv.innerText = data.errors.password;
+        }
+      } else {
         window.location.href = '/emailVerification';
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   });
 </script>
