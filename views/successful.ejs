@@ -1,0 +1,41 @@
+<%- include('partials/header'); -%>
+
+<div class="verification-success">
+  <h2>Verification Successful</h2>
+  <p
+    >Your email has been successfully verified. You can now log in to your
+    account.</p
+  >
+</div>
+
+<%- include('partials/footer'); -%>
+
+<style>
+  /* Styles for the verification success message */
+  .verification-success {
+    text-align: center;
+    margin: 50px auto;
+    max-width: 500px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .verification-success h2 {
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+
+  .verification-success p {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+</style>
+
+<script>
+  setTimeout(() => {
+    console.log('checking');
+    window.location.href = '/';
+  }, 2000);
+</script>

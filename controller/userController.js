@@ -3,6 +3,7 @@ const user_temp = require('../model/User-Temp');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 
 dotenv.config();
 
@@ -60,6 +61,16 @@ const generateVerificationToken = () => {
   return crypto.randomBytes(20).toString('hex');
 };
 
+const maxAge = 3 * 24 * 60 * 60;
+
+const jwtToken = (id) => {
+  return jwt.sign({ id }, 'authenticate it', {
+    expiresIn: maxAge,
+  });
+};
+
+// verifying email
+
 const userVerification = async (req, res) => {
   try {
     const responseToken = req.params.token;
@@ -74,7 +85,11 @@ const userVerification = async (req, res) => {
         password: response.password,
         verifiedStatus: true,
       });
-      res.status(200).json({ message: 'Sign Up successfull' });
+      const JWT_TOKEN = jwtToken(user._id);
+      res.cookie('jwt', JWT_TOKEN, { httpOnly: true, maxAge: maxAge * 1000 });
+      res.redirect('/successful');
+
+      // res.status(200).json({ message: 'Sign Up successfull' });
     } else {
       res.status(404).json({ message: 'Registration Failed' });
     }

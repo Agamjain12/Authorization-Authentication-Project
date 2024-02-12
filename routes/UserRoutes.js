@@ -21,5 +21,7 @@ router.get('/login', controllers.userLogin_get);
 router.post('/login');
 
 router.get('/verification/:token', controllers.userVerification);
-
+router.get('/successful', (req, res) => {
+  res.render('successful');
+});
 module.exports = router;
