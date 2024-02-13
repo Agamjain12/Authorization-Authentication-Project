@@ -4,11 +4,11 @@ const validate = (req, res, next) => {
   const errors = [];
 
   if (!requestBody.email) {
-    errors.push('name is not present');
+    errors.push('email is not present');
   }
 
   if (!requestBody.password) {
-    errors.push('quantity is not present');
+    errors.push('password is not present');
   }
   if (errors.length > 0) {
     res.json({

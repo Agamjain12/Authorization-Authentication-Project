@@ -8,13 +8,12 @@ const app = express();
 
 dotenv.config();
 
-app.use(express.json());
-
-app.use(express.static('public'));
 app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
+app.use(express.json());
+app.use(express.static('public'));
 app.use(router);
 
 // cookies example

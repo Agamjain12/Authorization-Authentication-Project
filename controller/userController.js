@@ -1,9 +1,11 @@
+const crypto = require('crypto');
+const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
 const user = require('../model/User');
 const user_temp = require('../model/User-Temp');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
 
 dotenv.config();
 
@@ -58,9 +60,12 @@ const userRegistration_post = async (req, res) => {
           .json({ errors: { email: 'email already exists' } });
       }
 
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(userBody.password, salt);
+
       const userResponse = await user_temp.create({
         email: userBody.email,
-        password: userBody.password,
+        password: hashedPassword,
         verification_token: uToken,
       });
       console.log(userResponse);
@@ -167,6 +172,77 @@ const userLogin_post = async (req, res) => {
   }
 };
 
+const googleAuth = async (req, res) => {
+  return res.redirect(
+    `https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&response_type=code&scope=openid profile email&state=${process.env.GOOGLE_STATE}&client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_CALLBACK_URL}`
+  );
+};
+
+const googleAuthCallback = async (req, res) => {
+  const returnedState = req.query.state;
+  const returnedError = req.query.error;
+
+  if (!returnedState || returnedState !== process.env.GOOGLE_STATE) {
+    return res.redirect('/signup');
+  }
+
+  if (!!returnedError) {
+    return res.redirect('/signup');
+  }
+
+  try {
+    const formData = new URLSearchParams({
+      code: req.query.code,
+      grant_type: 'authorization_code',
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    });
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData,
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    const userInfoResponse = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      }
+    );
+
+    const userInfo = await userInfoResponse.json();
+
+    let userId;
+
+    const existUser = await user.find({ email: userInfo.email });
+    if (existUser) {
+      userId = existUser._id;
+    } else {
+      const userResponse = await user.create({
+        password: null,
+        verifiedStatus: true,
+        email: userInfo.email,
+      });
+
+      userId = userResponse._id;
+    }
+
+    res.cookie('jwt', jwtToken(userId));
+    return res.redirect('/');
+  } catch (error) {
+    return res.redirect('/signup');
+  }
+};
+
 const verify = async (req, res) => {
   try {
     const token = req.cookies.jwt;
@@ -197,6 +273,8 @@ module.exports = {
   userRegistration_get,
   userLogin_get,
   userLogin_post,
+  googleAuth,
+  googleAuthCallback,
   verify,
   logout,
 };

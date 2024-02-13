@@ -21,30 +21,44 @@
   </body></html
 >
 
-<script>
-  if (localStorage.getItem('LOGIN') === 'SUCCESS') {
-    if (!document.getElementById('loginB').classList.contains('hidden')) {
-      document.getElementById('loginB').classList.add('hidden');
-    }
-    if (!document.getElementById('signupB').classList.contains('hidden')) {
-      document.getElementById('signupB').classList.add('hidden');
-    }
-
-    if (document.getElementById('logoutB').classList.contains('hidden')) {
-      document.getElementById('logoutB').classList.remove('hidden');
-    }
-  } else {
-    if (document.getElementById('loginB').classList.contains('hidden')) {
-      document.getElementById('loginB').classList.remove('hidden');
-    }
-    if (document.getElementById('signupB').classList.contains('hidden')) {
-      document.getElementById('signupB').classList.remove('hidden');
-    }
-
-    if (!document.getElementById('logoutB').classList.contains('hidden')) {
-      document.getElementById('logoutB').classList.add('hidden');
-    }
+<style>
+  #logoutB {
+    margin-top: 0;
   }
+</style>
+
+<script>
+  window.onload = async () => {
+    const verifyResponse = await fetch('/verify');
+
+    if (!verifyResponse.ok) {
+      localStorage.removeItem('LOGIN');
+
+      if (document.getElementById('loginB').classList.contains('hidden')) {
+        document.getElementById('loginB').classList.remove('hidden');
+      }
+      if (document.getElementById('signupB').classList.contains('hidden')) {
+        document.getElementById('signupB').classList.remove('hidden');
+      }
+
+      if (!document.getElementById('logoutB').classList.contains('hidden')) {
+        document.getElementById('logoutB').classList.add('hidden');
+      }
+    } else {
+      localStorage.setItem('LOGIN', 'SUCCESS');
+
+      if (!document.getElementById('loginB').classList.contains('hidden')) {
+        document.getElementById('loginB').classList.add('hidden');
+      }
+      if (!document.getElementById('signupB').classList.contains('hidden')) {
+        document.getElementById('signupB').classList.add('hidden');
+      }
+
+      if (document.getElementById('logoutB').classList.contains('hidden')) {
+        document.getElementById('logoutB').classList.remove('hidden');
+      }
+    }
+  };
 
   async function logout() {
     const response = await fetch('/logout');

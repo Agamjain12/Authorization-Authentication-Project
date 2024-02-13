@@ -16,7 +16,6 @@ const schema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: 'Password is required',
       minlength: [6, 'Password must be at least 6 characters long'],
     },
     verifiedStatus: {
@@ -28,12 +27,6 @@ const schema = mongoose.Schema(
     timestamps: true,
   }
 );
-
-schema.pre('save', async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
 
 // static method to login user
 schema.statics.login = async function (email, password) {

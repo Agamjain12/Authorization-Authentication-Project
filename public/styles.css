@@ -159,3 +159,34 @@ footer {
 .hidden {
   display: none;
 }
+
+.google-signin-btn {
+  display: inline-block;
+  background-color: #fff;
+  color: #757575;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.google-signin-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.google-icon-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.google-icon {
+  width: 100px;
+  margin-right: 10px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
