@@ -1,7 +1,9 @@
+const jwt = require('jsonwebtoken');
+
 const authGuard = (req, res, next) => {
   const token = req.cookies.jwt;
 
-  if (token) {
+  if (token && jwt.verify(token, 'authenticate it')) {
     return res.redirect('/');
   }
 

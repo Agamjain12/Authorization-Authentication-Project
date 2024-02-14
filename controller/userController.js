@@ -90,7 +90,7 @@ const userRegistration_post = async (req, res) => {
     let mailDetails = {
       from: '',
       to: userBody.email,
-      subject: 'Test mail',
+      subject: 'Email Verification mail',
       text: `click on the link to verify your mail http://localhost:3001/verification/${uToken}`,
     };
 
@@ -164,6 +164,7 @@ const userLogin_post = async (req, res) => {
   try {
     const resUser = await user.login(email, password);
     const JWT_TOKEN = jwtToken(user._id);
+    console.log(req.ip);
     res.cookie('jwt', JWT_TOKEN, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(200).json({ user: resUser._id });
   } catch (err) {
@@ -267,6 +268,96 @@ const logout = async (req, res) => {
   return res.status(200).json({ message: 'logout successful' });
 };
 
+const existingEmailVerification = async (req, res) => {
+  const userEmail = req.body.email;
+
+  if (!(await user.find({ email: userEmail }))) {
+    return res.status(404).json('email not registered');
+  }
+  const uToken = generateVerificationToken();
+
+  await user.updateOne(
+    {
+      email: userEmail,
+    },
+    { forgotPasswordToken: uToken }
+  );
+
+  console.log(uToken);
+  // sending mail
+  let mailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'agamj54@gmail.com',
+      pass: 'wgfjvkfpoieweuah',
+    },
+  });
+
+  let mailDetails = {
+    from: '',
+    to: userEmail,
+    subject: 'Verification mail',
+    text: `click on the link to verify your mail http://localhost:3001/forgotPassword?email=${userEmail}&token=${uToken}`,
+  };
+
+  try {
+    await mailTransporter.sendMail(mailDetails);
+    console.log('Email Sent Successfully');
+  } catch (error) {
+    console.log('Error Occurs', error);
+  }
+
+  res.status(200).json({ message: 'email verified' });
+};
+
+const forgotPassword = async (req, res) => {
+  const token = req.query.token;
+  const email = req.query.email;
+
+  console.log(token);
+  const userFound = await user.find({
+    email: email,
+  });
+
+  if (!userFound[0]) {
+    return res.status(404).json('email not found');
+  }
+
+  if (userFound[0].forgotPasswordToken != token) {
+    return res.status(403).json('token invalid');
+  }
+
+  await user.updateOne(
+    { email: userFound[0].email },
+    {
+      forgotPasswordToken: null,
+    }
+  );
+
+  return res.redirect(`/change-password?email=${userFound[0].email}`);
+};
+
+const changePassword = async (req, res) => {
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+
+  console.log('body: ', req.body);
+
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(userPassword, salt);
+
+  const response = await user.updateOne(
+    { email: userEmail },
+    { password: hashedPassword }
+  );
+
+  if (!response) {
+    return res.status(404).json('something went wrong');
+  }
+
+  return res.status(200).json('successfull');
+};
+
 module.exports = {
   userRegistration_post,
   userVerification,
@@ -277,4 +368,7 @@ module.exports = {
   googleAuthCallback,
   verify,
   logout,
+  existingEmailVerification,
+  forgotPassword,
+  changePassword,
 };

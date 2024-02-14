@@ -22,6 +22,10 @@ const schema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    forgotPasswordToken: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,

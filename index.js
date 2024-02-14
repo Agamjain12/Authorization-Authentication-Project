@@ -15,6 +15,7 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.static('public'));
 app.use(router);
+app.set('trust proxy', true);
 
 // cookies example
 

@@ -8,7 +8,10 @@
   <label for="password">Password</label>
   <input type="password" name="password" required />
   <div class="password error"></div>
-  <button>Sign in</button>
+  <div class="sign-in-buttons">
+    <button>Sign in</button>
+    <a href="/forgot-password">Forgot password?</a>
+  </div>
 </form>
 
 <div class="center">
@@ -24,6 +27,14 @@
 </div>
 
 <%- include('partials/footer'); -%>
+
+<style>
+  .sign-in-buttons {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+</style>
 
 <script>
   const form = document.querySelector('form');
